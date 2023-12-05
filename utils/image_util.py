@@ -93,9 +93,20 @@ def rgb_to_chromaticity(rgb):
 
 def save_srgb_image(image, path, filename):
     # Transform to PILImage
-    image_np = np.transpose(image.to(torch.float32).cpu().numpy(), (1, 2, 0)) * 255.0
+    if torch.is_tensor(image):
+        image_np = np.transpose(image.to(torch.float32).cpu().numpy(), (1, 2, 0)) * 255.0
+    elif isinstance(image, np.ndarray):
+        assert image.dtype == np.float32, f"image should be np.float32, but got {image.dtype}."
+        image_np = image * 255.0
+    else:
+        assert False, f"image should be torch.Tensor or np.ndarray, but got {type(image)}."
     image_np = image_np.astype(np.uint8)
-    image_pil = Image.fromarray(image_np, mode='RGB')
+    if image_np.ndim == 3:
+        image_pil = Image.fromarray(image_np, mode='RGB')
+    elif image_np.ndim == 2:
+        image_pil = Image.fromarray(image_np, mode='L')
+    else:
+        assert False, f"image should be 2D or 3D, but got {image.ndim}."
     # Save Image
     if not os.path.exists(path):
         os.makedirs(path)
