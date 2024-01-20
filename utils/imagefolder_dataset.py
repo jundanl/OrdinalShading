@@ -50,6 +50,7 @@ class ImageFolderLoader(Dataset):
             "MIT_test": filter_mit_test_files,
         }[mode]
         self.data_list = self.list_files(self.data_dir, img_filter)
+        self.data_list.sort()
 
     def list_files(self, directory, img_filter):
         """List all files in a directory, filtered by img_filter."""
@@ -76,6 +77,8 @@ class ImageFolderLoader(Dataset):
         # Check image shape and convert to RGB
         assert img.ndim < 4, f"Image should be 2D or 3D, but got {img.ndim}."
         if img.ndim == 3:
+            if img.shape[-1] == 4:  # RGBA
+                img = img[:, :, :3]  # Remove alpha channel
             img = img[:, :, ::-1]  # BGR -> RGB
             assert img.shape[-1] == 3 or img.shape[-1] == 1, \
                 f"Image should be RGB or gray-scale, but got {img.shape}."
