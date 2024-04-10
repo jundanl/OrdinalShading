@@ -33,6 +33,11 @@ if __name__ == "__main__":
                         action="store_true",
                         default=False,
                         help="Whether to maintain the size of the input image")
+    parser.add_argument("--resize_conf",
+                        type=int,
+                        default=-1,
+                        help="Resize confidence"
+                        )
     args = parser.parse_args()
 
     # download the pretrained weights and return the model (may take a bit to download weights)
@@ -108,10 +113,13 @@ if __name__ == "__main__":
             srgb_img_np = srgb_img.cpu().permute(1, 2, 0).numpy()
             # run the image through the pipeline (use R0 resizing dicussed in the paper)
             max_dim = max(srgb_img_np.shape[:2])
-            if max_dim < 1024:
-                resize_conf = 0.1
+            if args.resize_conf < 0:
+                if max_dim < 1024:
+                    resize_conf = 0.1
+                else:
+                    resize_conf = 1024
             else:
-                resize_conf = 1024
+                resize_conf = args.resize_conf
             if k == 0:
                 print(f"Running {img_path} with resize_conf {resize_conf}, is_linear {is_linear}")
             result = run_pipeline(
