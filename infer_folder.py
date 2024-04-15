@@ -58,11 +58,16 @@ if __name__ == "__main__":
             "mode": None,
             "is_linear": False
         },
-        "comparison_internet": {
-            "data_dir": "data/comparison-internet/",
+        "sample_internet": {
+            "data_dir": "data/paper_comparison/internet",
             "mode": None,
             "is_linear": False
         },
+        "linear_laval": {
+            "data_dir": "data/paper_comparison/linear_laval",
+            "mode": None,
+            "is_linear": True
+        }
     }
     # data_dir_paths = [
     #     "data/IIW",
